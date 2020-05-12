@@ -3,6 +3,7 @@ import { Store } from './store.model';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
+import { GetStoreFilterDto } from './dto/get-store-filter.dto';
 
 @Injectable()
 export class StoresService {
@@ -10,6 +11,25 @@ export class StoresService {
 
   getAllStores(): Store[] {
     return this.stores;
+  }
+
+  getStoresWithFilters(filterDto: GetStoreFilterDto): Store[] {
+    const { search } = filterDto;
+
+    let stores = this.getAllStores();
+
+    if (search) {
+      stores = stores.filter( store =>
+        store.name.includes(search) ||
+        store.address.includes(search) ||
+        store.cui.includes(search) ||
+        store.reg_number.includes(search) ||
+        store.phone_number.includes(search) ||
+        store.e_mail.includes(search)
+      );
+    }
+
+    return stores;
   }
 
   getStoreById(id: string): Store {

@@ -1,16 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { Store } from './store.model';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
+import { GetStoreFilterDto } from './dto/get-store-filter.dto';
 
 @Controller('stores')
 export class StoresController {
   constructor(private storesService: StoresService) {}
 
   @Get()
-  getAllStores(): Store[] {
-    return this.storesService.getAllStores();
+  getStores(@Query() filterDto: GetStoreFilterDto): Store[] {
+    if(Object.keys(filterDto).length) {
+      return this.storesService.getStoresWithFilters(filterDto);
+    } else {
+      return this.storesService.getAllStores();
+    }
   }
 
   @Get('/:id')
