@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { Store } from './store.model';
 import { CreateStoreDto } from './dto/create-store.dto';
@@ -10,6 +10,7 @@ export class StoresController {
   constructor(private storesService: StoresService) {}
 
   @Get()
+  @UsePipes(ValidationPipe)
   getStores(@Query() filterDto: GetStoreFilterDto): Store[] {
     if(Object.keys(filterDto).length) {
       return this.storesService.getStoresWithFilters(filterDto);
@@ -24,7 +25,8 @@ export class StoresController {
   }
 
   @Post()
-  createStore(@Body() createStoreDto: CreateStoreDto): Store {
+  @UsePipes(ValidationPipe)
+  createStore( createStoreDto: CreateStoreDto): Store {
     return this.storesService.createStore(createStoreDto);
   }
 
