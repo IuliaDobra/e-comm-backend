@@ -2,10 +2,15 @@ import { EntityRepository, Repository } from 'typeorm';
 import { Store } from './store.entity';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { GetStoreFilterDto } from './dto/get-store-filter.dto';
+import { User } from '../auth/user.entity';
+import { ConflictException, InternalServerErrorException } from '@nestjs/common';
 
 @EntityRepository(Store)
 export class StoreRepository extends Repository<Store>{
-  async createTask (createStoreDto: CreateStoreDto): Promise<Store> {
+  async createTask (
+    createStoreDto: CreateStoreDto,
+    user: User
+  ): Promise<Store> {
     const { name, address, cui, reg_number, iban, bank, phone_number, e_mail} = createStoreDto;
 
     const store = new Store();
@@ -17,14 +22,30 @@ export class StoreRepository extends Repository<Store>{
     store.bank = bank;
     store.phone_number = phone_number;
     store.e_mail = e_mail;
-    await store.save();
+    store.user = user;
+    try {
+      await store.save();
+    } catch (error) {
+      if(error.code === '23505') { // duplicate store
+        throw new ConflictException('Store already exists')
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
+
+    delete store.user;
 
     return store;
   }
 
-  async getStores (filterDto: GetStoreFilterDto): Promise<Store[]> {
+  async getStores (
+    filterDto: GetStoreFilterDto,
+    user: User
+  ): Promise<Store[]> {
     const { search } = filterDto;
     const query = this.createQueryBuilder('store');
+
+    query.where('store.userId= :userId', { userId: user.id });
 
     if (search) {
       query.andWhere('store.name LIKE :search ' +

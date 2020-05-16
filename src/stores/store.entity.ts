@@ -1,6 +1,8 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { User } from '../auth/user.entity';
 
 @Entity()
+@Unique(['cui', 'reg_number'])
 export class Store extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
@@ -28,4 +30,10 @@ export class Store extends BaseEntity {
 
   @Column()
   e_mail: string;
+
+  @ManyToOne(type => User, user => user.stores, { eager: false })
+  user: User;
+
+  @Column()
+  userId: number;
 }
