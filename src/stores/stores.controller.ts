@@ -1,9 +1,21 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { StoresService } from './stores.service';
-import { Store } from './store.model';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { UpdateStoreDto } from './dto/update-store.dto';
 import { GetStoreFilterDto } from './dto/get-store-filter.dto';
+import { Store } from './store.entity';
 
 @Controller('stores')
 export class StoresController {
@@ -11,34 +23,30 @@ export class StoresController {
 
   @Get()
   @UsePipes(ValidationPipe)
-  getStores(@Query() filterDto: GetStoreFilterDto): Store[] {
-    if(Object.keys(filterDto).length) {
-      return this.storesService.getStoresWithFilters(filterDto);
-    } else {
-      return this.storesService.getAllStores();
-    }
+  getStores(@Query() filterDto: GetStoreFilterDto): Promise<Store[]>  {
+    return this.storesService.getStores(filterDto);
   }
 
   @Get('/:id')
-  getStoreById(@Param('id') id: string): Store {
+  getStoreById(@Param('id', ParseIntPipe) id: number): Promise<Store> {
     return this.storesService.getStoreById(id);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
-  createStore( createStoreDto: CreateStoreDto): Store {
+  createStore(@Body() createStoreDto: CreateStoreDto ): Promise<Store> {
     return this.storesService.createStore(createStoreDto);
   }
 
   @Delete('/:id')
-  deleteStore(@Param('id') id: string): void {
-    this.storesService.deleteStore(id);
+  deleteStore(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.storesService.deleteStore(id);
   }
 
   @Patch('/:id')
   updateStore(
-    @Param('id') id: string,
-    @Body() updateStoreDto: UpdateStoreDto): Store {
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStoreDto: UpdateStoreDto): Promise<Store> {
     return this.storesService.updateStore(id, updateStoreDto);
   }
 }
