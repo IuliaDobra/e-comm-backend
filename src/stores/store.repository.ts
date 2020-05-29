@@ -7,7 +7,7 @@ import { ConflictException, InternalServerErrorException } from '@nestjs/common'
 
 @EntityRepository(Store)
 export class StoreRepository extends Repository<Store>{
-  async createTask (
+  async createStore (
     createStoreDto: CreateStoreDto,
     user: User
   ): Promise<Store> {

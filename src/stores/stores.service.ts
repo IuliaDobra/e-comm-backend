@@ -37,7 +37,7 @@ export class StoresService {
     createStoreDto: CreateStoreDto,
     user: User
   ): Promise<Store> {
-    return this.storeRepository.createTask(createStoreDto, user);
+    return this.storeRepository.createStore(createStoreDto, user);
   }
 
   async deleteStore(

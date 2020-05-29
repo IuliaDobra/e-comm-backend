@@ -1,5 +1,6 @@
-import { BaseEntity, Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { User } from '../auth/user.entity';
+import { Product } from '../products/product.entity';
 
 @Entity()
 @Unique(['cui', 'reg_number'])
